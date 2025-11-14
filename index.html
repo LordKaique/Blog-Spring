@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog - Gerenciador de Publicações</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f4f4f4;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: #2c3e50;
+            color: white;
+            padding: 1rem 0;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .publicacao {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .publicacao h2 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .publicacao .meta {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 15px;
+        }
+
+        .nao-publicado {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin-right: 10px;
+            margin-top: 10px;
+        }
+
+        .btn-primary {
+            background: #3498db;
+            color: white;
+        }
+
+        .btn-warning {
+            background: #f39c12;
+            color: white;
+        }
+
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .btn-success {
+            background: #27ae60;
+            color: white;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        textarea.form-control {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .alert {
+            padding: 12px 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 15% auto;
+            padding: 20px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+        }
+
+        .modal-buttons {
+            text-align: right;
+            margin-top: 20px;
+        }
+
+        footer {
+            background: #34495e;
+            color: white;
+            text-align: center;
+            padding: 20px 0;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <div class="container">
+        <h1>Blog - Gerenciador de Publicações</h1>
+    </div>
+</header>
+
+<div class="container">
+    <div id="alert-container"></div>
+
+    <div id="listagem-publicacoes">
+        <div style="text-align: right; margin-bottom: 20px;">
+            <button class="btn btn-primary" onclick="mostrarFormulario()">Incluir nova publicação</button>
+        </div>
+
+        <div id="publicacoes-container">
+            <!-- As publicações serão carregadas aqui via JavaScript -->
+        </div>
+    </div>
+
+    <div id="formulario-publicacao" style="display: none;">
+        <h2 id="form-titulo">Incluir nova publicação</h2>
+        <form id="publicacao-form">
+            <input type="hidden" id="publicacao-id">
+
+            <div class="form-group">
+                <label for="titulo">Título:</label>
+                <input type="text" id="titulo" class="form-control" required>
+            </div>
+
+            <div class="form-group">
+                <label for="autor">Autor:</label>
+                <select id="autor" class="form-control" required>
+                    <option value="">Selecione um autor</option>
+                    <!-- As opções serão preenchidas via JavaScript -->
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="dataPublicacao">Data de publicação:</label>
+                <input type="date" id="dataPublicacao" class="form-control" required>
+            </div>
+
+            <div class="form-group">
+                <label for="texto">Texto:</label>
+                <textarea id="texto" class="form-control" required minlength="10"></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-success">Salvar</button>
+            <button type="button" class="btn" onclick="mostrarListagem()">Cancelar</button>
+        </form>
+    </div>
+</div>
+
+<!-- Modal de confirmação de exclusão -->
+<div id="modal-excluir" class="modal">
+    <div class="modal-content">
+        <h3>Confirmar exclusão</h3>
+        <p>Deseja realmente excluir esta publicação?</p>
+        <div class="modal-buttons">
+            <button class="btn btn-danger" onclick="confirmarExclusao()">Sim</button>
+            <button class="btn" onclick="fecharModal()">Não</button>
+        </div>
+    </div>
+</div>
+
+<footer>
+    <div class="container">
+        <p>Kaique Amorim Cabral / Turma 3A / 2025</p>
+    </div>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>
